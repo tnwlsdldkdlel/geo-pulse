@@ -10,7 +10,13 @@
       "Bash(docker-compose up:*)",
       "Bash(docker compose:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: GEO-Pulse 프로젝트 초기 설정\n\n- Next.js 16 + TypeScript + App Router 설정\n- Tailwind CSS 4 + shadcn/ui 설정\n- Prisma + PostgreSQL 스키마 정의\n- Docker Compose \\(PostgreSQL, Redis\\) 설정\n- BullMQ 작업 큐 설정\n- 환경변수 관리 체계 구축\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh auth login:*)",
+      "Bash(gh auth setup-git:*)",
+      "Bash(git config:*)",
+      "Bash(gh repo create:*)",
+      "Bash(npx shadcn@latest add button input card badge -y)"
     ]
   }
 }
