@@ -16,7 +16,12 @@
       "Bash(gh auth setup-git:*)",
       "Bash(git config:*)",
       "Bash(gh repo create:*)",
-      "Bash(npx shadcn@latest add button input card badge -y)"
+      "Bash(npx shadcn@latest add button input card badge -y)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Phase 1 MVP 핵심 화면 구현\n\n## 1.1 랜딩 페이지 \\(/\\)\n- 히어로 섹션 \\(서비스 소개, URL 입력 폼\\)\n- 기능 소개 섹션 \\(SEO/GEO 6가지 기능\\)\n- 사용 방법 섹션\n- 헤더/푸터 컴포넌트\n\n## 1.2 분석 진행 화면 \\(/analysis/[id]/progress\\)\n- 분석 단계별 진행 상태 UI\n- 실시간 폴링으로 상태 업데이트\n- 완료 시 결과 페이지로 자동 이동\n\n## 1.3 분석 결과 상세 \\(/analysis/[id]\\)\n- 총점/SEO/GEO 점수 게이지 차트\n- SEO/GEO 분석 결과 카드\n- 개선 가이드 섹션\n\n## 1.4 공유 리포트 \\(/report/[shareToken]\\)\n- 공개 리포트 페이지\n- 점수 요약 및 해석\n- 서비스 가입 CTA\n\n## API\n- POST /api/analysis - 분석 생성\n- GET /api/analysis/[id] - 결과 조회\n- GET /api/analysis/[id]/status - 상태 조회\n- POST /api/analysis/[id]/share - 공유 토큰 생성\n- GET /api/report/[shareToken] - 공유 리포트 조회\n\n## 기타\n- Prisma 6로 다운그레이드 \\(안정성\\)\n- shadcn/ui 컴포넌트 추가 \\(button, input, card, badge\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(npx playwright install chromium)",
+      "Bash(npm run test:analysis:*)",
+      "Bash(curl:*)"
     ]
   }
 }

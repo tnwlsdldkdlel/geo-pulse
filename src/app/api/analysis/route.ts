@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma"; // DB 비활성화
+import { createAnalysis } from "@/lib/analysis-store";
 import { addAnalysisJob } from "@/lib/queue";
 
 export async function POST(request: NextRequest) {
@@ -24,13 +25,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 분석 레코드 생성
-    const analysis = await prisma.analysis.create({
-      data: {
-        url,
-        status: "PENDING",
-      },
-    });
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const analysis = await prisma.analysis.create({
+    //   data: {
+    //     url,
+    //     status: "PENDING",
+    //   },
+    // });
+
+    const analysis = await createAnalysis(url);
 
     // 작업 큐에 추가
     await addAnalysisJob(analysis.id, url);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma"; // DB 비활성화
+import { getAnalysis } from "@/lib/analysis-store";
 
 export async function GET(
   request: NextRequest,
@@ -8,9 +9,12 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const analysis = await prisma.analysis.findUnique({
-      where: { id },
-    });
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const analysis = await prisma.analysis.findUnique({
+    //   where: { id },
+    // });
+
+    const analysis = await getAnalysis(id);
 
     if (!analysis) {
       return NextResponse.json(

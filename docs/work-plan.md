@@ -15,100 +15,100 @@
 
 ## Phase 1: MVP 핵심 화면
 
-### 1.1 🏠 랜딩 페이지 (`/`)
+### 1.1 🏠 랜딩 페이지 (`/`) ✅
 > 서비스 소개 및 URL 분석 시작
 
 **UI 컴포넌트**
-- [ ] 히어로 섹션 (서비스 소개, CTA 버튼)
-- [ ] URL 입력 폼
-- [ ] 기능 소개 섹션
+- [x] 히어로 섹션 (서비스 소개, CTA 버튼)
+- [x] URL 입력 폼
+- [x] 기능 소개 섹션
 - [ ] 최근 분석 목록 (로컬스토리지 기반)
-- [ ] 푸터
+- [x] 푸터
 
 **라우트:** `/`
 
 ---
 
-### 1.2 ⏳ 분석 진행 화면 (`/analysis/[id]/progress`)
+### 1.2 ⏳ 분석 진행 화면 (`/analysis/[id]/progress`) ✅
 > 분석 진행 상태 실시간 표시
 
 **UI 컴포넌트**
-- [ ] 분석 대상 URL 표시
-- [ ] 진행 상태 표시 (스피너, 프로그레스 바)
-- [ ] 현재 분석 단계 표시 (크롤링 → SEO 분석 → GEO 분석)
-- [ ] 예상 소요 시간
+- [x] 분석 대상 URL 표시
+- [x] 진행 상태 표시 (스피너, 프로그레스 바)
+- [x] 현재 분석 단계 표시 (크롤링 → SEO 분석 → GEO 분석)
+- [x] 예상 소요 시간
 - [ ] 취소 버튼
 
 **API**
-- [ ] `POST /api/analysis` - 새 분석 생성
-- [ ] `GET /api/analysis/[id]/status` - 분석 상태 조회 (폴링)
+- [x] `POST /api/analysis` - 새 분석 생성
+- [x] `GET /api/analysis/[id]/status` - 분석 상태 조회 (폴링)
 
 **백엔드**
-- [ ] 분석 작업 생성 및 큐 등록
-- [ ] 분석 워커 프로세스
-- [ ] Playwright 웹 크롤러
-- [ ] SEO 분석 엔진
-  - [ ] Meta 태그 분석 (title, description, keywords)
-  - [ ] Header 구조 분석 (H1~H6)
-  - [ ] 스키마 마크업 검출
-  - [ ] 페이지 성능 측정
-- [ ] GEO 분석 엔진 (OpenAI API)
-  - [ ] 인용 신뢰도 분석
-  - [ ] LLM 가독성 분석
-  - [ ] 엔티티 최적화 분석
-- [ ] 상태 업데이트 로직
+- [x] 분석 작업 생성 및 큐 등록
+- [x] 분석 워커 프로세스
+- [x] Playwright 웹 크롤러
+- [x] SEO 분석 엔진
+  - [x] Meta 태그 분석 (title, description, keywords)
+  - [x] Header 구조 분석 (H1~H6)
+  - [x] 스키마 마크업 검출
+  - [x] 페이지 성능 측정
+- [x] GEO 분석 엔진 (OpenAI API)
+  - [x] 인용 신뢰도 분석
+  - [x] LLM 가독성 분석
+  - [x] 엔티티 최적화 분석
+- [x] 상태 업데이트 로직
 
 **라우트:** `/analysis/[id]/progress`
 
 ---
 
-### 1.3 📈 분석 결과 상세 (`/analysis/[id]`)
+### 1.3 📈 분석 결과 상세 (`/analysis/[id]`) ✅
 > SEO/GEO 분석 결과 및 점수 표시
 
 **UI 컴포넌트**
-- [ ] 분석 대상 URL 및 스크린샷
-- [ ] 총점 게이지 바
+- [x] 분석 대상 URL 및 스크린샷
+- [x] 총점 게이지 바
 - [ ] SEO/GEO 점수 레이더 차트
-- [ ] SEO 분석 결과 카드
-  - [ ] Meta 태그 분석 결과
-  - [ ] Header 구조 분석 결과
-  - [ ] 스키마 마크업 분석 결과
-  - [ ] 성능 분석 결과
-- [ ] GEO 분석 결과 카드
-  - [ ] 인용 신뢰도 점수
-  - [ ] LLM 가독성 점수
-  - [ ] 엔티티 최적화 점수
+- [x] SEO 분석 결과 카드
+  - [x] Meta 태그 분석 결과
+  - [x] Header 구조 분석 결과
+  - [x] 스키마 마크업 분석 결과
+  - [x] 성능 분석 결과
+- [x] GEO 분석 결과 카드
+  - [x] 인용 신뢰도 점수
+  - [x] LLM 가독성 점수
+  - [x] 엔티티 최적화 점수
 - [ ] 실행 가이드 탭
   - [ ] 마케터용 가이드
   - [ ] 개발자용 가이드
-- [ ] 공유 버튼
+- [x] 공유 버튼
 - [ ] PDF 다운로드 버튼
-- [ ] 새 분석 시작 버튼
+- [x] 새 분석 시작 버튼
 
 **API**
-- [ ] `GET /api/analysis/[id]` - 분석 결과 조회
-- [ ] `POST /api/analysis/[id]/share` - 공유 토큰 생성
+- [x] `GET /api/analysis/[id]` - 분석 결과 조회
+- [x] `POST /api/analysis/[id]/share` - 공유 토큰 생성
 - [ ] `GET /api/analysis/[id]/pdf` - PDF 다운로드
 
 **백엔드**
 - [ ] 실행 가이드 생성 (OpenAI)
-- [ ] 공유 토큰 생성
+- [x] 공유 토큰 생성
 - [ ] Playwright PDF 생성
 
 **라우트:** `/analysis/[id]`
 
 ---
 
-### 1.4 🔗 공유 리포트 (`/report/[shareToken]`)
+### 1.4 🔗 공유 리포트 (`/report/[shareToken]`) ✅
 > 공개 리포트 페이지
 
 **UI 컴포넌트**
-- [ ] 분석 결과 요약 (읽기 전용)
-- [ ] 총점 및 주요 지표
-- [ ] 서비스 소개 CTA
+- [x] 분석 결과 요약 (읽기 전용)
+- [x] 총점 및 주요 지표
+- [x] 서비스 소개 CTA
 
 **API**
-- [ ] `GET /api/report/[shareToken]` - 공유 리포트 조회
+- [x] `GET /api/report/[shareToken]` - 공유 리포트 조회
 
 **라우트:** `/report/[shareToken]`
 

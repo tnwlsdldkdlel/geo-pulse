@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma"; // DB 비활성화
+import { getAnalysis } from "@/lib/analysis-store";
 
 export async function GET(
   request: NextRequest,
@@ -8,18 +9,21 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const analysis = await prisma.analysis.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        status: true,
-        url: true,
-        seoScore: true,
-        geoScore: true,
-        totalScore: true,
-        updatedAt: true,
-      },
-    });
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const analysis = await prisma.analysis.findUnique({
+    //   where: { id },
+    //   select: {
+    //     id: true,
+    //     status: true,
+    //     url: true,
+    //     seoScore: true,
+    //     geoScore: true,
+    //     totalScore: true,
+    //     updatedAt: true,
+    //   },
+    // });
+
+    const analysis = await getAnalysis(id);
 
     if (!analysis) {
       return NextResponse.json(
@@ -28,7 +32,15 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(analysis);
+    return NextResponse.json({
+      id: analysis.id,
+      status: analysis.status,
+      url: analysis.url,
+      seoScore: analysis.seoScore,
+      geoScore: analysis.geoScore,
+      totalScore: analysis.totalScore,
+      updatedAt: analysis.updatedAt,
+    });
   } catch (error) {
     console.error("분석 상태 조회 오류:", error);
     return NextResponse.json(

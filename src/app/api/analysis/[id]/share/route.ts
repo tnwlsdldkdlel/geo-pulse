@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { randomBytes } from "crypto";
+// import { prisma } from "@/lib/prisma"; // DB 비활성화
+// import { randomBytes } from "crypto";
+import { getAnalysis, createShareToken } from "@/lib/analysis-store";
 
 export async function POST(
   request: NextRequest,
@@ -9,9 +10,12 @@ export async function POST(
   try {
     const { id } = await params;
 
-    const analysis = await prisma.analysis.findUnique({
-      where: { id },
-    });
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const analysis = await prisma.analysis.findUnique({
+    //   where: { id },
+    // });
+
+    const analysis = await getAnalysis(id);
 
     if (!analysis) {
       return NextResponse.json(
@@ -28,13 +32,14 @@ export async function POST(
       });
     }
 
-    // 새 공유 토큰 생성
-    const shareToken = randomBytes(16).toString("hex");
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const shareToken = randomBytes(16).toString("hex");
+    // await prisma.analysis.update({
+    //   where: { id },
+    //   data: { shareToken },
+    // });
 
-    await prisma.analysis.update({
-      where: { id },
-      data: { shareToken },
-    });
+    const shareToken = await createShareToken(id);
 
     return NextResponse.json({
       shareToken,

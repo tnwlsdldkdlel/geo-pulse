@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma"; // DB 비활성화
+import { getAnalysisByShareToken } from "@/lib/analysis-store";
 
 export async function GET(
   request: NextRequest,
@@ -8,9 +9,12 @@ export async function GET(
   try {
     const { shareToken } = await params;
 
-    const analysis = await prisma.analysis.findUnique({
-      where: { shareToken },
-    });
+    // [DB 비활성화] Prisma 대신 Redis 저장소 사용
+    // const analysis = await prisma.analysis.findUnique({
+    //   where: { shareToken },
+    // });
+
+    const analysis = await getAnalysisByShareToken(shareToken);
 
     if (!analysis) {
       return NextResponse.json(
