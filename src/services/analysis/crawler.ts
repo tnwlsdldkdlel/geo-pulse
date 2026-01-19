@@ -1,10 +1,8 @@
-import { chromium, Browser, Page } from "playwright";
 import * as cheerio from "cheerio";
 
 export interface CrawlResult {
   html: string;
   text: string;
-  screenshot?: Buffer;
   loadTime: number;
   pageSize: number;
   url: string;
@@ -35,74 +33,45 @@ export interface SchemaMarkup {
   data: Record<string, unknown>[];
 }
 
-let browser: Browser | null = null;
-
-async function getBrowser(): Promise<Browser> {
-  if (!browser) {
-    browser = await chromium.launch({
-      headless: true,
-    });
-  }
-  return browser;
-}
-
-export async function closeBrowser(): Promise<void> {
-  if (browser) {
-    await browser.close();
-    browser = null;
-  }
-}
-
 export async function crawlPage(url: string): Promise<CrawlResult> {
-  const browserInstance = await getBrowser();
-  const context = await browserInstance.newContext({
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    viewport: { width: 1920, height: 1080 },
+  const startTime = Date.now();
+
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+    },
+    redirect: "follow",
   });
 
-  const page = await context.newPage();
-
-  try {
-    const startTime = Date.now();
-
-    const response = await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
-
-    // 추가 로딩 대기 (최대 5초)
-    await page.waitForTimeout(3000);
-
-    const loadTime = Date.now() - startTime;
-
-    // 페이지 로딩 완료 대기
-    await page.waitForLoadState("domcontentloaded");
-
-    const html = await page.content();
-    const text = await page.evaluate(() => document.body?.innerText || "");
-
-    // 스크린샷 캡처
-    const screenshot = await page.screenshot({
-      type: "png",
-      fullPage: false,
-    });
-
-    const pageSize = Buffer.byteLength(html, "utf8");
-    const finalUrl = page.url();
-
-    return {
-      html,
-      text,
-      screenshot,
-      loadTime,
-      pageSize,
-      url,
-      finalUrl,
-    };
-  } finally {
-    await context.close();
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  const html = await response.text();
+  const loadTime = Date.now() - startTime;
+
+  // Cheerio를 사용해 텍스트 추출
+  const $ = cheerio.load(html);
+
+  // 스크립트와 스타일 태그 제거 후 텍스트 추출
+  $("script, style, noscript").remove();
+  const text = $("body").text().replace(/\s+/g, " ").trim();
+
+  const pageSize = Buffer.byteLength(html, "utf8");
+  const finalUrl = response.url;
+
+  return {
+    html,
+    text,
+    loadTime,
+    pageSize,
+    url,
+    finalUrl,
+  };
 }
 
 export function extractMetadata(html: string): PageMetadata {

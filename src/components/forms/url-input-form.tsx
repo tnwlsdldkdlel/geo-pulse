@@ -10,10 +10,39 @@ interface UrlInputFormProps {
   className?: string;
 }
 
+interface ProgressMessage {
+  type: "progress" | "complete" | "error";
+  stage?: string;
+  progress?: number;
+  message?: string;
+  data?: AnalysisResult;
+  error?: string;
+}
+
+interface AnalysisResult {
+  id: string;
+  url: string;
+  status: string;
+  seoScore: number;
+  geoScore: number;
+  totalScore: number;
+  seoResult: unknown;
+  geoResult: unknown;
+  createdAt: string;
+}
+
+const stageLabels: Record<string, string> = {
+  crawling: "웹페이지 크롤링",
+  seo: "SEO 분석",
+  geo: "GEO 분석",
+};
+
 export function UrlInputForm({ size = "default", className }: UrlInputFormProps) {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [currentStage, setCurrentStage] = useState("");
   const router = useRouter();
 
   const validateUrl = (value: string): boolean => {
@@ -28,6 +57,8 @@ export function UrlInputForm({ size = "default", className }: UrlInputFormProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setProgress(0);
+    setCurrentStage("");
 
     const trimmedUrl = url.trim();
     if (!trimmedUrl) {
@@ -54,14 +85,58 @@ export function UrlInputForm({ size = "default", className }: UrlInputFormProps)
       });
 
       if (!response.ok) {
-        throw new Error("분석 요청에 실패했습니다.");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "분석 요청에 실패했습니다.");
       }
 
-      const data = await response.json();
-      router.push(`/analysis/${data.id}/progress`);
+      // SSE 스트리밍 응답 처리
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error("응답을 읽을 수 없습니다.");
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const text = decoder.decode(value);
+        const lines = text.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const message: ProgressMessage = JSON.parse(line.slice(6));
+
+              if (message.type === "progress") {
+                setProgress(message.progress || 0);
+                setCurrentStage(message.stage || "");
+              } else if (message.type === "complete" && message.data) {
+                // LocalStorage에 결과 저장
+                localStorage.setItem(
+                  `analysis_${message.data.id}`,
+                  JSON.stringify(message.data)
+                );
+                // 결과 페이지로 이동
+                router.push(`/analysis/${message.data.id}`);
+                return;
+              } else if (message.type === "error") {
+                throw new Error(message.error || "분석 중 오류가 발생했습니다.");
+              }
+            } catch (parseError) {
+              // JSON 파싱 실패 무시 (불완전한 데이터)
+              if (parseError instanceof SyntaxError) continue;
+              throw parseError;
+            }
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
       setIsLoading(false);
+      setProgress(0);
+      setCurrentStage("");
     }
   };
 
@@ -118,6 +193,24 @@ export function UrlInputForm({ size = "default", className }: UrlInputFormProps)
         </Button>
       </div>
       {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+
+      {/* 진행 상태 표시 */}
+      {isLoading && progress > 0 && (
+        <div className="mt-4">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-muted-foreground">
+              {currentStage ? stageLabels[currentStage] || currentStage : "처리 중..."}
+            </span>
+            <span className="font-medium">{progress}%</span>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-blue-600 h-full transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
     </form>
   );
 }

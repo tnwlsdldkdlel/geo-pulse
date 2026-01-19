@@ -43,6 +43,27 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
   );
 }
 
+// 공유 버튼 컴포넌트
+function ShareButton() {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // 클립보드 API 지원하지 않는 경우 무시
+    }
+  };
+
+  return (
+    <Button variant="outline" onClick={handleShare}>
+      {copied ? "복사완료!" : "링크 복사"}
+    </Button>
+  );
+}
+
 interface SEOResult {
   score: number;
   meta: {
@@ -198,14 +219,16 @@ export default function AnalysisResultPage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAnalysis = async () => {
+    // LocalStorage에서 분석 결과 로드
+    const loadAnalysis = () => {
       try {
-        const response = await fetch(`/api/analysis/${id}`);
-        if (!response.ok) {
-          throw new Error("분석 결과를 불러올 수 없습니다.");
+        const stored = localStorage.getItem(`analysis_${id}`);
+        if (stored) {
+          const data = JSON.parse(stored);
+          setAnalysis(data);
+        } else {
+          setError("분석 결과를 찾을 수 없습니다. 새로운 분석을 시작해주세요.");
         }
-        const data = await response.json();
-        setAnalysis(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
       } finally {
@@ -213,7 +236,7 @@ export default function AnalysisResultPage({
       }
     };
 
-    fetchAnalysis();
+    loadAnalysis();
   }, [id]);
 
   if (loading) {
@@ -279,8 +302,7 @@ export default function AnalysisResultPage({
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">공유하기</Button>
-            <Button variant="outline">PDF 다운로드</Button>
+            <ShareButton />
           </div>
         </div>
 

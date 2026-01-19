@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { crawlPage, closeBrowser } from "../src/services/analysis/crawler";
+import { crawlPage } from "../src/services/analysis/crawler";
 import { analyzeSEO } from "../src/services/analysis/seo-analyzer";
 import { analyzeGEO } from "../src/services/analysis/geo-analyzer";
 
@@ -54,9 +54,6 @@ async function testAnalysis(url: string) {
 
   } catch (error) {
     console.error("\n❌ 분석 실패:", error);
-  } finally {
-    await closeBrowser();
-    console.log("\n브라우저 종료됨.");
   }
 }
 
