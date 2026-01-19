@@ -21,7 +21,19 @@
       "Bash(git push:*)",
       "Bash(npx playwright install chromium)",
       "Bash(npm run test:analysis:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git commit:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(docker exec:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run worker:*)",
+      "Bash(docker run:*)",
+      "Bash(docker port:*)",
+      "Bash(docker inspect:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker stop:*)"
     ]
   }
 }

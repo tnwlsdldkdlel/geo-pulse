@@ -46,8 +46,8 @@ async function processAnalysis(
     console.log(`[Worker] GEO 점수: ${geoResult.score}`);
     await job.updateProgress(80);
 
-    // 종합 점수 계산 (SEO 40%, GEO 60%)
-    const totalScore = Math.round(seoResult.score * 0.4 + geoResult.score * 0.6);
+    // 종합 점수 계산 (SEO 50%, GEO 50%)
+    const totalScore = Math.round((seoResult.score + geoResult.score) / 2);
 
     // [DB 비활성화] Prisma 대신 Redis 저장소 사용
     // await prisma.analysis.update({
